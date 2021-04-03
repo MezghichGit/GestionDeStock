@@ -1,6 +1,10 @@
 package com.sip.ams.entities;
 
 public class Provider {
+	@Override
+	public String toString() {
+		return "Provider [name=" + name + ", adress=" + adress + ", email=" + email + "]";
+	}
 	private String name;
 	public String getName() {
 		return name;

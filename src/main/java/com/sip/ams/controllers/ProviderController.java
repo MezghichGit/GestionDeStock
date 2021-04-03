@@ -6,7 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sip.ams.entities.Provider;
@@ -14,8 +16,12 @@ import com.sip.ams.entities.Provider;
 @RequestMapping("/provider")
 @Controller
 public class ProviderController {
-
-	
+	static ArrayList<Provider> objs = new ArrayList<>();
+	static {
+		objs.add(new Provider("Samsung","Korea","samsung@gmail.com"));
+		objs.add(new Provider("HP","USA","hp@hotmail.com"));
+		objs.add(new Provider("Dell","USA","dell@hotmail.com"));
+	}
 	@RequestMapping("/list")
 	//@ResponseBody
 	public String providersList(Model m)
@@ -27,10 +33,8 @@ public class ProviderController {
 		providers.add("Dell");
 		
 		
-		ArrayList<Provider> objs = new ArrayList<>();
-		objs.add(new Provider("Samsung","Korea","samsung@gmail.com"));
-		objs.add(new Provider("HP","USA","hp@hotmail.com"));
-		objs.add(new Provider("Dell","USA","dell@hotmail.com"));
+		
+	
 		
 		m.addAttribute("pr", provider);
 		m.addAttribute("providers",providers);
@@ -41,24 +45,28 @@ public class ProviderController {
 	}
 	
 	@GetMapping("add")
-	public String addProviderGet()
+	public String addProviderGet(Model m)
 	{
+		m.addAttribute("provider", new Provider("ab","cd","a@gmail.com"));
 		return "provider/addProvider";
 	}
+	
+	
 	@PostMapping("add")
-	@ResponseBody
-	public String addProviderPost()
+	//@ResponseBody
+	/*public String addProviderPost(
+			@RequestParam("pname")String name,
+			@RequestParam("paddress")String address,
+			@RequestParam("pemail")String email)*/
+	public String addProviderPost(Provider provider)
 	{
 		// ici on va ajouter un nouveau provider dans la liste
-		return "PageInsrtion";
+		
+		//Provider p = new Provider(name,address,email);
+		System.out.println(provider);
+		objs.add(provider);
+		return "redirect:list";
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 }
