@@ -1,72 +1,81 @@
 package com.sip.ams.controllers;
 
-import java.util.ArrayList;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.sip.ams.entities.Provider;
+import com.sip.ams.repositories.ProviderRepository;
+import java.util.List;
+import javax.validation.Valid;
 
-@RequestMapping("/provider")
 @Controller
+@RequestMapping("/provider/")
 public class ProviderController {
-	static ArrayList<Provider> objs = new ArrayList<>();
-	static {
-		objs.add(new Provider("Samsung","Korea","samsung@gmail.com"));
-		objs.add(new Provider("HP","USA","hp@hotmail.com"));
-		objs.add(new Provider("Dell","USA","dell@hotmail.com"));
+	private final ProviderRepository providerRepository;
+
+	@Autowired
+	public ProviderController(ProviderRepository providerRepository) {
+		this.providerRepository = providerRepository;
 	}
-	@RequestMapping("/list")
-	//@ResponseBody
-	public String providersList(Model m)
-	{
-		String provider = "Samsung";
-		ArrayList<String> providers = new ArrayList<>();
-		providers.add("Samsung");
-		providers.add("HP");
-		providers.add("Dell");
+
+	@GetMapping("list")
+	// @ResponseBody
+	public String listProviders(Model model) {
+		List<Provider>providers = (List<Provider>) providerRepository.findAll();
+		/*if (ls.isEmpty())
+			ls = null;*/
 		
-		
-		
-	
-		
-		m.addAttribute("pr", provider);
-		m.addAttribute("providers",providers);
-		m.addAttribute("objs",objs);
-		
-		
-		return "provider/listProviders";   // on place le nom de la vue
+		//model.addAttribute("providers",ls);
+		model.addAttribute("providers",providers);
+		return "provider/listProviders";
 	}
-	
+
 	@GetMapping("add")
-	public String addProviderGet(Model m)
-	{
-		m.addAttribute("provider", new Provider("ab","cd","a@gmail.com"));
+	public String showAddProviderForm(Model model) {
+		Provider provider = new Provider();// object dont la valeur des attributs par defaut
+		model.addAttribute("provider", provider);
 		return "provider/addProvider";
 	}
-	
-	
+
 	@PostMapping("add")
-	//@ResponseBody
-	/*public String addProviderPost(
-			@RequestParam("pname")String name,
-			@RequestParam("paddress")String address,
-			@RequestParam("pemail")String email)*/
-	public String addProviderPost(Provider provider)
-	{
-		// ici on va ajouter un nouveau provider dans la liste
-		
-		//Provider p = new Provider(name,address,email);
-		System.out.println(provider);
-		objs.add(provider);
+	public String addProvider(@Valid Provider provider, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			return "provider/addProvider";
+		}
+		providerRepository.save(provider);
 		return "redirect:list";
 	}
-	
-	
+
+	@GetMapping("delete/{id}")
+	public String deleteProvider(@PathVariable("id") long num, Model model) {
+		// long id2 = 100L;
+		Provider provider = providerRepository.findById(num).orElseThrow(() -> new IllegalArgumentException("Invalid provider Id:" + num));
+		//System.out.println("suite du programme...");
+		providerRepository.delete(provider);
+		/*
+		 * model.addAttribute("providers", providerRepository.findAll()); return
+		 * "provider/listProviders";
+		 */
+	return "redirect:../list";
+	}
+
+	@GetMapping("edit/{id}")
+	public String showProviderFormToUpdate(@PathVariable("id") long id, Model model) {
+		Provider provider = providerRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid provider Id:" + id));
+		model.addAttribute("provider", provider);
+		return "provider/updateProvider";
+	}
+
+	@PostMapping("update")
+	public String updateProvider(@Valid Provider provider, BindingResult result, Model model) {
+		providerRepository.save(provider);
+		return "redirect:list";
+	}
 }
