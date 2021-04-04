@@ -53,7 +53,7 @@ public class ProviderController {
 	}
 
 	@GetMapping("delete/{id}")
-	public String deleteProvider(@PathVariable("id") long num, Model model) {
+	public String deleteProvider(@PathVariable("id") long num) {
 		// long id2 = 100L;
 		Provider provider = providerRepository.findById(num).orElseThrow(() -> new IllegalArgumentException("Invalid provider Id:" + num));
 		//System.out.println("suite du programme...");
@@ -75,6 +75,10 @@ public class ProviderController {
 
 	@PostMapping("update")
 	public String updateProvider(@Valid Provider provider, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			model.addAttribute("provider", provider);
+			return "provider/updateProvider";
+		}
 		providerRepository.save(provider);
 		return "redirect:list";
 	}
