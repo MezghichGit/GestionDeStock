@@ -8,12 +8,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.sip.ams.entities.Provider;
 import com.sip.ams.repositories.ProviderRepository;
 import java.util.List;
 import javax.validation.Valid;
 
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;  
 @Controller
 @RequestMapping("/provider/")
 public class ProviderController {
@@ -44,10 +48,14 @@ public class ProviderController {
 	}
 
 	@PostMapping("add")
-	public String addProvider(@Valid Provider provider, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			return "provider/addProvider";
-		}
+	public String addProvider(@RequestParam("dateProvider")String dateProvider, @Valid Provider provider, BindingResult result, Model model) throws ParseException {
+		//if (result.hasErrors()) {
+
+			//return "provider/addProvider";
+		//}
+
+	    Date date1=(Date) new SimpleDateFormat("yyyy-MM-dd").parse(dateProvider);  
+	    provider.setDateProvider(date1);
 		providerRepository.save(provider);
 		return "redirect:list";
 	}

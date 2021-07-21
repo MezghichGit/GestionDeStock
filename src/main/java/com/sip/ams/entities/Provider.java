@@ -1,5 +1,7 @@
 package com.sip.ams.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,6 +24,18 @@ public class Provider {
 	@NotBlank(message = "Email is mandatory")
 	@Column(name = "email")
 	private String email;
+	
+	//@NotBlank(message = "Date is mandatory")
+	//@Temporal(TemporalType.TIMESTAMP)
+	private Date dateProvider;
+
+	public Date getDateProvider() {
+		return dateProvider;
+	}
+
+	public void setDateProvider(Date dateProvider) {
+		this.dateProvider = dateProvider;
+	}
 
 	public Provider() {
 	}
